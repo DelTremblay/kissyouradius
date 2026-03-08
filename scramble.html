@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>scramble</title>
+  </head>
+  <body>
+    <div id="divsection" style="text-align: center; margin-top: 10vh">
+      <p id='outtext'>type something...</p>
+      <select id='selectElem'>
+        <option value="0">text</option>
+        <option value="1">integer</option>
+        <option value="2">float</option>
+        <option value="3">array</option>
+        <option value="4">object</option>
+      </select>
+      <button id='startbtn'>scramble</button>
+      <br><br>
+      
+    </div>
+
+<script>
+  const textoutput = document.getElementById('outtext');
+  const button = document.getElementById('startbtn');
+  const select = document.getElementById('selectElem');
+  var writeType = 'text';
+  
+  select.addEventListener('change', () => createElem(parseInt(select.value)));
+  button.addEventListener('click', () => {
+  const inputVal = document.getElementById('userInput').value;
+  if (!inputVal || inputVal === ''){ textoutput.innerText = 'type something...'; return}
+        switch (writeType){
+          case 'text':
+            textoutput.innerText = randomizer(inputVal);
+            break;
+          case 'number':
+            textoutput.innerText = randomizer(inputVal);
+            break;
+          case 'array':
+            let tempInput = inputVal.split(',');
+            textoutput.innerText = randomizer(tempInput);
+            break;
+          case 'object':
+            textoutput.innerText = JSON.stringify(randomizer(JSON.parse(inputVal)));
+            break;
+      }
+  });
+
+  function randomizer(input) {
+    if(!input) return
+    let format = 'array';
+    
+    console.log(typeof input != 'string' ? input : '\'' + input + '\'');
+    
+    if (typeof input === 'object' && input !== null && !Array.isArray(input)) {
+      input = Object.values(input);
+      format = 'object';
+    }
+    
+    if (typeof input === 'string') {
+      input =  input.split('');
+      format = 'string';
+    }
+    
+    if (typeof input === 'number' && !isNaN(input)) {
+      input =  input.toString().replace('.', '').split('').map(Number);
+      format = 'number';
+    }
+    
+    const output = formatOutput(remapArray(input, remapIndex(input)), format);
+    
+    console.log(input, 'format:\'' + format + '\'');
+    console.log(remapIndex(input))
+    console.log(remapArray(input, remapIndex(input)));
+    console.log(output);
+    return output
+  }
+  
+  
+  function remapIndex(array) {
+    const length = array.length;
+    let output = [];
+    
+    while (output.length < array.length) {
+      let tempnewIndex = Math.floor(Math.random() * length);
+      
+      if (!output.includes(tempnewIndex)) {
+        output.push(tempnewIndex);
+      }
+    }
+    
+    return output;
+  }
+  
+  function remapArray(array, index){
+    let output = [];
+    for (let i = 0; i < array.length; i++){
+      output.push(array[index[i]]);
+    }
+    return output
+  }
+  
+  function formatOutput(randomizedArray, format){
+    let output;
+    switch (format) {
+      case 'array':
+        output = randomizedArray.join('');
+        break;
+      
+      case 'object':
+        output = {};
+        randomizedArray.forEach((val, i) => { output[i + 1] = `${val}`; });
+        break;
+      
+      case 'string':
+        output = '\'' + randomizedArray.join('') + '\'';
+        break;
+      
+      case 'number':
+        output = parseInt(randomizedArray.join(''));
+        break;
+      
+      default:
+        return
+    }
+    return output
+  }
+  
+  function createElem(value){
+     const oldInput = document.querySelector('input');
+    if (oldInput) oldInput.remove();
+    const newElement = document.createElement('input');
+    newElement.id = 'userInput';
+      
+    switch (value){
+      case 0:
+        newElement.type = 'text';
+        writeType = 'text';
+        break;
+      case 1:
+        newElement.type = 'number';
+        writeType = 'number';
+        break;
+      case 2:
+        newElement.type = 'number';
+        writeType = 'number';
+        break;
+      case 3:
+        newElement.type = 'text';
+        newElement.placeholder = 'seperate using commas';
+        writeType = 'array';
+        break;
+      case 4:
+        newElement.type = 'text';
+        newElement.placeholder = 'use json object syntax';
+        writeType = 'object';
+        break;
+      }
+      
+      document.getElementById('divsection').appendChild(newElement);
+  }
+
+  window.addEventListener('DOMContentLoaded', () => { createElem(0); });
+</script>
+  </body>
+</html>
